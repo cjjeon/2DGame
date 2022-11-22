@@ -24,7 +24,7 @@ class Canvas {
         this.context = this.canvas.getContext('2d')
         if (this.context) this.context.imageSmoothingEnabled = false
         document.body.appendChild(this.canvas)
-        setInterval(this.update.bind(this), 25)
+        setInterval(this.update.bind(this), 50)
     }
 
 }

@@ -66,6 +66,10 @@ class Player extends Component {
                 this.state.movingDirection.y = 'DOWN'
                 this.state.animate = 'MOVING'
             }
+            if (event.key === ' ') {
+                this.state.animate = 'ATTACK'
+                this.state.sourceImgPosition.x = 0
+            }
         })
 
         document.addEventListener('keyup', (event) => {
@@ -82,10 +86,19 @@ class Player extends Component {
     }
 
     updateFrame() {
-        this.state.sourceImgPosition.x += 48
-        if (this.state.sourceImgPosition.x >= 48 * 6) {
-            this.state.sourceImgPosition.x = 0
+        if (this.state.animate === 'ATTACK') {
+            this.state.sourceImgPosition.x += 48
+            if (this.state.sourceImgPosition.x >= 48 * 3) {
+                this.state.sourceImgPosition.x = 0
+                this.state.animate = "MOVING";
+            }
+        } else {
+            this.state.sourceImgPosition.x += 48
+            if (this.state.sourceImgPosition.x >= 48 * 6) {
+                this.state.sourceImgPosition.x = 0
+            }
         }
+
     }
 
     updateState() {
