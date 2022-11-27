@@ -1,11 +1,6 @@
 import Canvas from "./canvas";
-import Layout from "./components/layout";
-import Monster from "./components/monster";
-import Player from "./components/player";
+import {GAME_OBJECTS} from "./constants";
 
 
-const player = new Player({})
-const monster = new Monster()
-const layout = new Layout()
-const canvas = new Canvas([layout, monster, player]);
+const canvas = new Canvas(GAME_OBJECTS);
 canvas.start();

@@ -1,4 +1,4 @@
-import {Position} from "./components/type";
+import {Position} from "./type";
 
 class ImageDrawer {
     private position: Position

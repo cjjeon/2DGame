@@ -1,12 +1,12 @@
-import Component from "./component";
+import Default from "./components/default";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./constants";
 
 class Canvas {
     canvas: HTMLCanvasElement = document.createElement('canvas')
     context: null | CanvasRenderingContext2D = null
-    components: Component[] = []
+    components: Default[] = []
 
-    constructor(components: Component[]) {
+    constructor(components: Default[]) {
         this.components = components
     }
 
