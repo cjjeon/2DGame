@@ -34,6 +34,8 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
     }
     image = new Image()
 
+    private testLine: string = "black";
+
     constructor(props: Partial<PlayerObjectProps>) {
         super(props);
         Object.assign(this, props)
@@ -113,8 +115,12 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
     updateState() {
         if (this.animate === Animate.MOVING) {
             this.move(false);
+            this.testLine = "black";
             const objects = this.detectCollision()
-            if (objects.length > 0) this.move(true)
+            if (objects.length > 0) {
+                this.move(true)
+                this.testLine = "red";
+            }
         }
     }
 
@@ -144,6 +150,7 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
 
         context.beginPath();
         context.rect(this.position.x, this.position.y, this.width, this.height)
+        context.strokeStyle = this.testLine
         context.stroke();
         this.updateFrame()
         this.updateState()
