@@ -8,6 +8,7 @@ class Canvas {
 
     constructor(components: DefaultObject[]) {
         this.components = components
+        this.canvas.oncontextmenu = () => false
     }
 
     update() {
