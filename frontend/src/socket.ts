@@ -1,5 +1,7 @@
 import {io} from "socket.io-client";
-import {Position} from "./type";
+import Canvas from "./canvas";
+import PlayerObject from "./objects/player-object";
+import {Position, UserState} from "./type";
 
 enum SendMessageType {
     MOUSE_CLICK,
@@ -19,8 +21,38 @@ interface SendMessage {
     data: MouseClickData
 }
 
-function init() {
+
+interface SyncState {
+    players: {
+        [id: string]: UserState
+    }
+}
+
+function processSyncState(canvas: Canvas, syncState: SyncState) {
+    for (const playerId in syncState.players) {
+        const userState = syncState.players[playerId]
+        const component = canvas.getComponent(playerId)
+        if (component) {
+            (component as PlayerObject).position = userState.currentPosition
+        } else {
+            canvas.addComponent(new PlayerObject({
+                id: playerId,
+                position: userState.currentPosition,
+                dimension: {
+                    width: 48,
+                    height: 48,
+                }
+            }))
+        }
+    }
+}
+
+
+function init(canvas: Canvas) {
     const socket = io("ws://localhost:4001", {auth: {userId: 'Bobby'}})
+
+    const element = document.createElement('div')
+    document.body.appendChild(element)
 
     socket.on("connect_error", (err) => {
         // add some connection error
@@ -44,8 +76,19 @@ function init() {
     })
 
     socket.on(MESSAGE_STATE.SYNC, (message) => {
-        console.log(`sync data from server: ${message}`)
+        console.log(`sync data from server`)
+        processSyncState(canvas, message)
     })
+
+    setInterval(() => {
+        const start = Date.now()
+        if (socket.connected) {
+            socket.emit('ping', () => {
+                const duration = Date.now() - start;
+                element.textContent = `ping: ${duration}ms`
+            })
+        }
+    }, 1000)
 }
 
 export default init

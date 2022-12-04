@@ -116,8 +116,7 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
         if (this.animate === Animate.MOVING) {
             this.move(false);
             this.testLine = "black";
-            const objects = this.detectCollision()
-            if (objects.length > 0) {
+            if (this.isCollide) {
                 this.move(true)
                 this.testLine = "red";
             }

@@ -1,8 +1,14 @@
+export interface DefaultObjectProps {
+    id: string
+}
+
 class DefaultObject {
-    constructor(props: any) {
+    id: string = ''
+
+    constructor(props: Partial<DefaultObjectProps>) {
         Object.assign(this, props)
     }
-    
+
     render(context: CanvasRenderingContext2D) {
     }
 }

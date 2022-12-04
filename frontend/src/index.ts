@@ -1,9 +1,8 @@
 import Canvas from "./canvas";
-import {GAME_OBJECTS} from "./constants";
 import init from "./socket";
 
-const canvas = new Canvas(GAME_OBJECTS);
+const canvas = new Canvas([]);
 canvas.start();
 
 
-init()
+init(canvas)

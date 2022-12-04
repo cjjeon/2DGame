@@ -21,12 +21,12 @@ export default function init(server: http.Server) {
             return next(new Error("invalid userId"))
         }
         socket.userId = userId;
-        room.addUser(userId);
         next();
     });
 
     socketServer.on('connection', (socket) => {
         console.log(`${socket.userId} connected`);
+        room.addUser(socket.userId, socket);
 
         // Joining room for the user
         socket.join(roomId)
@@ -36,8 +36,13 @@ export default function init(server: http.Server) {
             socket.send("hello world!")
         })
 
+        socket.on('ping', (callback) => {
+            callback()
+        })
+
         socket.on('disconnect', () => {
             console.log('user disconnected');
+            room.removeUser(socket.userId)
         });
     })
 }

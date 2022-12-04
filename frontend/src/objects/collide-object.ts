@@ -1,9 +1,8 @@
-import {GAME_OBJECTS} from "../constants";
 import {Dimension, Position} from "../type";
-import DefaultObject from "./default-object";
+import DefaultObject, {DefaultObjectProps} from "./default-object";
 
 
-export interface CollideObjectProps {
+export interface CollideObjectProps extends DefaultObjectProps {
     position: Position
     dimension: Dimension
     scale: number
@@ -20,6 +19,7 @@ class CollideObject extends DefaultObject implements CollideObjectProps {
         height: 16
     }
     scale = 1
+    isCollide: boolean = false
 
     constructor(props: Partial<CollideObjectProps>) {
         super(props);
@@ -32,25 +32,6 @@ class CollideObject extends DefaultObject implements CollideObjectProps {
 
     get height() {
         return this.dimension.height * this.scale
-    }
-
-    detectCollision(): CollideObject[] {
-        const collidingObject: CollideObject[] = []
-
-        
-        for (const object of GAME_OBJECTS) {
-            if (object instanceof CollideObject && object !== this) {
-                if (
-                    this.position.x <= object.position.x + object.width &&
-                    object.position.x <= this.position.x + this.width &&
-                    this.position.y <= object.position.y + object.height &&
-                    object.position.y <= this.position.y + this.height
-                ) {
-                    collidingObject.push(object)
-                }
-            }
-        }
-        return collidingObject
     }
 }
 
