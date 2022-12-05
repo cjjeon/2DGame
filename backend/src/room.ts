@@ -1,16 +1,18 @@
 import SocketIO from "socket.io";
-import {DEFAULT_USER_STATE, UserState} from "./type";
+import {DEFAULT_USER_STATE, Position, UserState} from "./type";
 
 enum MESSAGE_STATE {
     SYNC = "SYNC"
 }
 
+interface UserStorage {
+    socket: SocketIO.Socket
+    userState: UserState
+}
+
 
 interface RoomStorage {
-    [id: string]: {
-        socket: SocketIO.Socket
-        userState: UserState
-    } | undefined
+    [id: string]: UserStorage | undefined
 }
 
 
@@ -43,10 +45,33 @@ class Room {
         this.roomId = roomId
         this.socketServer = socketServer
 
-        this.timer = setInterval(this.process.bind(this), 2000);
+        this.timer = setInterval(this.process.bind(this), 20);
+    }
+
+    engine() {
+        Object.keys(this.roomStorage).forEach((id) => {
+            const userStorage = this.roomStorage[id] as UserStorage
+            if (userStorage.userState.currentPosition.x > userStorage.userState.desiredPosition.x) {
+                userStorage.userState.currentPosition.x -= 1;
+            }
+            if (userStorage.userState.currentPosition.x < userStorage.userState.desiredPosition.x) {
+                userStorage.userState.currentPosition.x += 1;
+            }
+
+            if (userStorage.userState.currentPosition.y > userStorage.userState.desiredPosition.y) {
+                userStorage.userState.currentPosition.y -= 1;
+            }
+            if (userStorage.userState.currentPosition.y < userStorage.userState.desiredPosition.y) {
+                userStorage.userState.currentPosition.y += 1;
+            }
+        })
+        console.log(this.roomStorage["Bobby"]?.userState.desiredPosition)
     }
 
     process() {
+        // process moving
+        this.engine()
+
         // every 400ms send out everyone's state
         console.debug(`Sending SYNC Message to room ${this.roomId}`)
         this.socketServer.to(this.roomId).emit(MESSAGE_STATE.SYNC, convertRoomStorageToSyncState(this.roomStorage))
@@ -65,6 +90,13 @@ class Room {
 
     removeUser(id: string) {
         this.roomStorage[id] = undefined
+    }
+
+    updatePlayerPosition(id: string, position: Position) {
+        if (this.roomStorage.hasOwnProperty(id) && this.roomStorage[id]) {
+            // @ts-ignore
+            this.roomStorage[id].userState.desiredPosition = position
+        }
     }
 }
 

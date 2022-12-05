@@ -1,17 +1,16 @@
+export interface Position {
+    x: number,
+    y: number
+}
+
 export enum UserAnimation {
     STALE,
     MOVING,
 }
 
 export interface UserState {
-    currentPosition: {
-        x: number,
-        y: number,
-    },
-    desiredPosition: {
-        x: number,
-        y: number,
-    },
+    currentPosition: Position,
+    desiredPosition: Position,
     health: number,
     animation: UserAnimation
 }
@@ -31,6 +30,20 @@ export const DEFAULT_USER_STATE: UserState = {
 
 export interface Users {
     [userName: string]: UserState
+}
+
+
+export enum ReceivedMessageType {
+    MOVE_POSITION,
+}
+
+export interface MovePositionData {
+    position: Position
+}
+
+export interface ReceivedMessage {
+    type: ReceivedMessageType,
+    data: MovePositionData
 }
 
 

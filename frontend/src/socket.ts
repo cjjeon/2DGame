@@ -4,23 +4,21 @@ import PlayerObject from "./objects/player-object";
 import {Position, UserState} from "./type";
 
 enum SendMessageType {
-    MOUSE_CLICK,
+    MOVE_POSITION,
+}
+
+interface MovePositionData {
+    position: Position
+}
+
+interface SendMessage {
+    type: SendMessageType,
+    data: MovePositionData
 }
 
 enum MESSAGE_STATE {
     SYNC = "SYNC"
 }
-
-interface MouseClickData {
-    position: Position
-}
-
-
-interface SendMessage {
-    type: SendMessageType,
-    data: MouseClickData
-}
-
 
 interface SyncState {
     players: {
@@ -62,13 +60,18 @@ function init(canvas: Canvas) {
     })
 
     document.addEventListener('mousedown', (event) => {
-        const data: MouseClickData = {
-            position: {
-                x: event.clientX,
-                y: event.clientY
+        if (event.button === 2) {
+            // Right Click
+            const canvasRect = canvas.canvas.getBoundingClientRect()
+            const data: MovePositionData = {
+                position: {
+                    x: event.clientX - canvasRect.left,
+                    y: event.clientY - canvasRect.top
+                }
             }
+
+            socket.send({type: SendMessageType.MOVE_POSITION, data})
         }
-        socket.send({type: SendMessageType.MOUSE_CLICK, data})
     })
 
     socket.on('message', (message) => {
@@ -76,7 +79,6 @@ function init(canvas: Canvas) {
     })
 
     socket.on(MESSAGE_STATE.SYNC, (message) => {
-        console.log(`sync data from server`)
         processSyncState(canvas, message)
     })
 

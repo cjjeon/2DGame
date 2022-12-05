@@ -2,6 +2,7 @@ import * as http from "http";
 import SocketIO from "socket.io";
 import {v4 as uuidv4} from 'uuid';
 import Room from "./room";
+import {MovePositionData, ReceivedMessage, ReceivedMessageType} from "./type";
 
 export default function init(server: http.Server) {
     const socketServer = new SocketIO.Server(server, {
@@ -31,9 +32,12 @@ export default function init(server: http.Server) {
         // Joining room for the user
         socket.join(roomId)
 
-        socket.on('message', (message) => {
-            console.log("Received Message: ", message)
-            socket.send("hello world!")
+        socket.on('message', (message: ReceivedMessage) => {
+            if (message.type === ReceivedMessageType.MOVE_POSITION) {
+                const data = message.data as MovePositionData
+                room.updatePlayerPosition(socket.userId, data.position)
+            }
+            socket.send("message received!")
         })
 
         socket.on('ping', (callback) => {
