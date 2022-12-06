@@ -4,8 +4,9 @@ export interface Position {
 }
 
 export enum UserAnimation {
-    STALE,
-    MOVING,
+    STALE = 'STALE',
+    MOVING = 'MOVING',
+    ATTACK = 'ATTACK'
 }
 
 export interface UserState {

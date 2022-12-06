@@ -1,4 +1,4 @@
-import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./constants";
+import {CANVAS_HEIGHT, CANVAS_WIDTH, GRID_SCALE} from "./constants";
 import CollideObject from "./objects/collide-object";
 import DefaultObject from "./objects/default-object";
 
@@ -6,15 +6,40 @@ class Canvas {
     canvas: HTMLCanvasElement = document.createElement('canvas')
     context: null | CanvasRenderingContext2D = null
     components: DefaultObject[] = []
+    debug: boolean = true
 
-    constructor(components: DefaultObject[]) {
-        this.components = components
+    constructor() {
         this.canvas.oncontextmenu = () => false
+    }
+
+    drawGrid() {
+        if (this.context) {
+            // Draw horizontal lines
+            for (let i = 0; i < this.canvas.height; i = i + GRID_SCALE) {
+                this.context.beginPath();
+                this.context.moveTo(0, i);
+                this.context.lineTo(this.canvas.width, i)
+                this.context.strokeStyle = "#627d55";
+                this.context.stroke()
+            }
+
+            // Draw vertical lines
+            for (let i = 0; i < this.canvas.width; i = i + GRID_SCALE) {
+                this.context.beginPath();
+                this.context.moveTo(i, 0);
+                this.context.lineTo(i, this.canvas.height)
+                this.context.strokeStyle = "#627d55";
+                this.context.stroke()
+            }
+        }
     }
 
     update() {
         if (this.context) {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+
+            if (this.debug) this.drawGrid()
+
             this.components.forEach(component => {
                 if (component instanceof CollideObject) this.detectCollision(component)
                 component.render(this.context as CanvasRenderingContext2D)
@@ -57,6 +82,10 @@ class Canvas {
     getComponent(id: string): DefaultObject | undefined {
         // this should return ref to the object
         return this.components.find(c => c.id === id)
+    }
+
+    removeComponent(id: string) {
+        this.components = this.components.filter(c => c.id === id)
     }
 }
 

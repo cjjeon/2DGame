@@ -1,5 +1,6 @@
 import {io} from "socket.io-client";
 import Canvas from "./canvas";
+import {GRID_SCALE} from "./constants";
 import PlayerObject from "./objects/player-object";
 import {Position, UserState} from "./type";
 
@@ -31,7 +32,8 @@ function processSyncState(canvas: Canvas, syncState: SyncState) {
         const userState = syncState.players[playerId]
         const component = canvas.getComponent(playerId)
         if (component) {
-            (component as PlayerObject).position = userState.currentPosition
+            (component as PlayerObject).position = userState.currentPosition;
+            (component as PlayerObject).animate = userState.animation;
         } else {
             canvas.addComponent(new PlayerObject({
                 id: playerId,
@@ -39,7 +41,7 @@ function processSyncState(canvas: Canvas, syncState: SyncState) {
                 dimension: {
                     width: 48,
                     height: 48,
-                }
+                },
             }))
         }
     }
@@ -65,8 +67,8 @@ function init(canvas: Canvas) {
             const canvasRect = canvas.canvas.getBoundingClientRect()
             const data: MovePositionData = {
                 position: {
-                    x: event.clientX - canvasRect.left,
-                    y: event.clientY - canvasRect.top
+                    x: Math.round((event.clientX - canvasRect.left) / GRID_SCALE),
+                    y: Math.round((event.clientY - canvasRect.top) / GRID_SCALE)
                 }
             }
 
@@ -91,6 +93,7 @@ function init(canvas: Canvas) {
             })
         }
     }, 1000)
+
 }
 
 export default init

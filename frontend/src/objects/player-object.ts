@@ -1,12 +1,8 @@
 import PlayerImage from '../assets/player.png'
-import {Position} from "../type";
+import {GRID_SCALE} from "../constants";
+import {Position, UserAnimation} from "../type";
 import CollideObject, {CollideObjectProps} from "./collide-object";
 
-enum Animate {
-    STALE = 'STALE',
-    MOVING = 'MOVING',
-    ATTACK = 'ATTACK'
-}
 
 type MovingDirect = {
     x: 'LEFT' | 'RIGHT' | null,
@@ -16,7 +12,7 @@ type MovingDirect = {
 export interface PlayerObjectProps extends CollideObjectProps {
     sourceImgPosition: Position
     speed: number
-    animate: Animate
+    animate: UserAnimation
     movingDirection: MovingDirect
     image: HTMLImageElement
 }
@@ -28,7 +24,7 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
     }
     scale = 2
     speed = 10
-    animate = Animate.STALE
+    animate = UserAnimation.STALE
     movingDirection: MovingDirect = {
         x: null, y: null
     }
@@ -48,22 +44,22 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
     onKeyDown(event: KeyboardEvent) {
         if (event.key === 'ArrowRight') {
             this.movingDirection.x = 'RIGHT'
-            this.animate = Animate.MOVING
+            this.animate = UserAnimation.MOVING
         }
         if (event.key === 'ArrowLeft') {
             this.movingDirection.x = 'LEFT'
-            this.animate = Animate.MOVING
+            this.animate = UserAnimation.MOVING
         }
         if (event.key === 'ArrowUp') {
             this.movingDirection.y = 'UP'
-            this.animate = Animate.MOVING
+            this.animate = UserAnimation.MOVING
         }
         if (event.key === 'ArrowDown') {
             this.movingDirection.y = 'DOWN'
-            this.animate = Animate.MOVING
+            this.animate = UserAnimation.MOVING
         }
         if (event.key === ' ') {
-            this.animate = Animate.ATTACK
+            this.animate = UserAnimation.ATTACK
             this.sourceImgPosition.x = 0
         }
     }
@@ -76,15 +72,15 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
             this.movingDirection.y = null
         }
 
-        if (this.movingDirection.x === null && this.movingDirection.y === null) this.animate = Animate.STALE
+        if (this.movingDirection.x === null && this.movingDirection.y === null) this.animate = UserAnimation.STALE
     }
 
     updateFrame() {
-        if (this.animate === Animate.ATTACK) {
+        if (this.animate === UserAnimation.ATTACK) {
             this.sourceImgPosition.x += this.dimension.width
             if (this.sourceImgPosition.x >= this.dimension.width * 3) {
                 this.sourceImgPosition.x = 0
-                this.animate = Animate.MOVING;
+                this.animate = UserAnimation.MOVING;
             }
         } else {
             this.sourceImgPosition.x += this.dimension.width
@@ -92,42 +88,13 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
                 this.sourceImgPosition.x = 0
             }
         }
-
-    }
-
-    move(reverse: boolean) {
-        let x = 0
-        let y = 0
-        if (this.movingDirection.x === 'RIGHT') x = this.speed
-        if (this.movingDirection.x === 'LEFT') x = this.speed * -1
-        if (this.movingDirection.y === 'UP') y = this.speed * -1
-        if (this.movingDirection.y === 'DOWN') y = this.speed
-
-        if (reverse) {
-            x = x * -1
-            y = y * -1
-        }
-
-        this.position.x += x;
-        this.position.y += y;
-    }
-
-    updateState() {
-        if (this.animate === Animate.MOVING) {
-            this.move(false);
-            this.testLine = "black";
-            if (this.isCollide) {
-                this.move(true)
-                this.testLine = "red";
-            }
-        }
     }
 
     getImageRow() {
-        if (this.animate === Animate.ATTACK) {
+        if (this.animate === UserAnimation.ATTACK) {
             return this.dimension.height * 2
         }
-        if (this.animate === Animate.MOVING) {
+        if (this.animate === UserAnimation.MOVING) {
             return this.dimension.height
         }
         // STALE
@@ -141,18 +108,17 @@ class PlayerObject extends CollideObject implements PlayerObjectProps {
             this.getImageRow(),
             this.dimension.width,
             this.dimension.height,
-            this.position.x,
-            this.position.y,
+            this.position.x * GRID_SCALE,
+            this.position.y * GRID_SCALE,
             this.width,
             this.height,
         )
 
         context.beginPath();
-        context.rect(this.position.x, this.position.y, this.width, this.height)
+        context.rect(this.position.x * GRID_SCALE, this.position.y * GRID_SCALE, this.width, this.height)
         context.strokeStyle = this.testLine
         context.stroke();
-        this.updateFrame()
-        this.updateState()
+        this.updateFrame();
     }
 }
 

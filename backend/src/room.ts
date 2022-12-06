@@ -1,5 +1,5 @@
 import SocketIO from "socket.io";
-import {DEFAULT_USER_STATE, Position, UserState} from "./type";
+import {DEFAULT_USER_STATE, Position, UserAnimation, UserState} from "./type";
 
 enum MESSAGE_STATE {
     SYNC = "SYNC"
@@ -8,6 +8,7 @@ enum MESSAGE_STATE {
 interface UserStorage {
     socket: SocketIO.Socket
     userState: UserState
+    isDeleted: boolean
 }
 
 
@@ -48,48 +49,65 @@ class Room {
         this.timer = setInterval(this.process.bind(this), 20);
     }
 
-    engine() {
+    runGameEngine() {
         Object.keys(this.roomStorage).forEach((id) => {
-            const userStorage = this.roomStorage[id] as UserStorage
-            if (userStorage.userState.currentPosition.x > userStorage.userState.desiredPosition.x) {
-                userStorage.userState.currentPosition.x -= 1;
-            }
-            if (userStorage.userState.currentPosition.x < userStorage.userState.desiredPosition.x) {
-                userStorage.userState.currentPosition.x += 1;
-            }
+            if (this.roomStorage[id]) {
+                const userStorage = this.roomStorage[id] as UserStorage
+                userStorage.userState.animation = UserAnimation.STALE
+                if (userStorage.userState.currentPosition.x > userStorage.userState.desiredPosition.x) {
+                    userStorage.userState.currentPosition.x -= 1;
+                    userStorage.userState.animation = UserAnimation.MOVING
+                }
+                if (userStorage.userState.currentPosition.x < userStorage.userState.desiredPosition.x) {
+                    userStorage.userState.currentPosition.x += 1;
+                    userStorage.userState.animation = UserAnimation.MOVING
+                }
 
-            if (userStorage.userState.currentPosition.y > userStorage.userState.desiredPosition.y) {
-                userStorage.userState.currentPosition.y -= 1;
-            }
-            if (userStorage.userState.currentPosition.y < userStorage.userState.desiredPosition.y) {
-                userStorage.userState.currentPosition.y += 1;
+                if (userStorage.userState.currentPosition.y > userStorage.userState.desiredPosition.y) {
+                    userStorage.userState.currentPosition.y -= 1;
+                    userStorage.userState.animation = UserAnimation.MOVING
+                }
+                if (userStorage.userState.currentPosition.y < userStorage.userState.desiredPosition.y) {
+                    userStorage.userState.currentPosition.y += 1;
+                    userStorage.userState.animation = UserAnimation.MOVING
+                }
+
+                if (userStorage.isDeleted) {
+                    this.roomStorage[id] = undefined
+                }
             }
         })
-        console.log(this.roomStorage["Bobby"]?.userState.desiredPosition)
     }
 
     process() {
+        if (Object.keys(this.roomStorage).length === 0) return
+
         // process moving
-        this.engine()
+        this.runGameEngine()
 
         // every 400ms send out everyone's state
-        console.debug(`Sending SYNC Message to room ${this.roomId}`)
         this.socketServer.to(this.roomId).emit(MESSAGE_STATE.SYNC, convertRoomStorageToSyncState(this.roomStorage))
     }
 
     addUser(id: string, socket: SocketIO.Socket) {
         // Should we care about the user is already in the room?
         // TODO maybe something to care about it. For now, I'm ignoring it
-        if (id in this.roomStorage) throw new Error(`user (${id}) already in the room`);
+        if (this.roomStorage[id]) {
+            console.error(`user (${id}) already in the room`);
+            (this.roomStorage[id] as UserStorage).socket.disconnect();
+        }
 
         this.roomStorage[id] = {
             socket,
-            userState: DEFAULT_USER_STATE
+            userState: DEFAULT_USER_STATE,
+            isDeleted: false
         }
     }
 
     removeUser(id: string) {
-        this.roomStorage[id] = undefined
+        if (this.roomStorage[id]) {
+            (this.roomStorage[id] as UserStorage).isDeleted = true
+        }
     }
 
     updatePlayerPosition(id: string, position: Position) {

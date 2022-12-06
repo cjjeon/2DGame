@@ -9,8 +9,9 @@ export interface Dimension {
 }
 
 export enum UserAnimation {
-    STALE,
-    MOVING,
+    STALE = 'STALE',
+    MOVING = 'MOVING',
+    ATTACK = 'ATTACK'
 }
 
 export interface UserState {
