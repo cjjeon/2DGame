@@ -1,8 +1,20 @@
-import Canvas from "./canvas";
-import init from "./socket";
+// import Canvas from "./canvas";
+// import init from "./socket";
+//
+// const canvas = new Canvas();
+// canvas.start();
+//
+//
+// init(canvas)
 
-const canvas = new Canvas();
-canvas.start();
 
+import Phaser from 'phaser'
+import LoginScene from './scenes/LoginScene'
 
-init(canvas)
+const game = new Phaser.Game({
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    pixelArt: true,
+    scene: [new LoginScene()]
+})
