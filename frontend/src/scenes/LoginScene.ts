@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import WideButton from "../buttons/WideButton";
 
 export default class LoginScene extends Phaser.Scene {
-    private button: WideButton | undefined
+    private wideButton: WideButton | undefined
 
     constructor() {
         super('login-scene');
@@ -13,7 +13,7 @@ export default class LoginScene extends Phaser.Scene {
     }
 
     create() {
-        this.button = new WideButton(this, 200, 50)
+        this.wideButton = new WideButton(this, 400, 300, 'Login')
     }
 
     update() {
