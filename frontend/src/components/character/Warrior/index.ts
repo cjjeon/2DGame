@@ -42,7 +42,7 @@ export default class Warrior extends Phaser.GameObjects.Container {
                 break
             default:
                 this.sprite.setVelocity(0, 0)
-                this.sprite.play('idle')
+                this.sprite.play('idle', true)
                 break
         }
     }
