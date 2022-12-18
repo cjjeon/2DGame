@@ -18,23 +18,21 @@ export default class PlayerScene extends Phaser.Scene {
     create() {
         this.warrior = new Warrior(this, 300, 400)
         this.cursors = this.input.keyboard.createCursorKeys()
+
     }
 
     update(time: number, delta: number) {
+        let direction: 'left' | 'right' | 'up' | 'down' | null = null
+
         if (this.cursors?.left.isDown) {
-            this.warrior?.move('left')
+            direction = 'left'
+        } else if (this.cursors?.right.isDown) {
+            direction = 'right'
+        } else if (this.cursors?.up.isDown) {
+            direction = 'up'
+        } else if (this.cursors?.down.isDown) {
+            direction = 'down'
         }
-
-        if (this.cursors?.right.isDown) {
-            this.warrior?.move('right')
-        }
-
-        if (this.cursors?.up.isDown) {
-            this.warrior?.move('up')
-        }
-
-        if (this.cursors?.down.isDown) {
-            this.warrior?.move('down')
-        }
+        this.warrior?.move(direction)
     }
 }

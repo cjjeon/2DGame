@@ -21,6 +21,10 @@ const game = new Phaser.Game({
         width: GAME_WIDTH,
         height: GAME_HEIGHT,
     },
+    physics: {
+        default: 'arcade',
+        arcade: {}
+    },
     pixelArt: true,
-    scene: [new LoginScene(), new PlayerScene()]
+    scene: [new PlayerScene(), new LoginScene()]
 })

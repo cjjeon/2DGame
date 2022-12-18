@@ -5,15 +5,15 @@ export default class Warrior extends Phaser.GameObjects.Container {
     static key: string = 'warrior'
     static image: string = WarriorImage
 
-    private sprite: Phaser.GameObjects.Sprite
+    private sprite: Phaser.Physics.Arcade.Sprite
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y);
         this.scene.add.existing(this)
 
         const tags = this.scene.anims.createFromAseprite(Warrior.key)
-        this.sprite = this.scene.add.sprite(0, 0, Warrior.key).play({key: 'idle', repeat: -1})
-        this.sprite.setScale(2)
+        this.sprite = this.scene.physics.add.sprite(0, 0, Warrior.key).play({key: 'idle', repeat: -1})
+        this.sprite.setScale(1.25)
 
         this.add(this.sprite)
     }
@@ -22,25 +22,28 @@ export default class Warrior extends Phaser.GameObjects.Container {
         scene.load.aseprite(Warrior.key, Warrior.image, WarriorJson)
     }
 
-    move(direction: 'left' | 'right' | 'up' | 'down') {
-        let newX = this.x
-        let newY = this.y
-
+    move(direction: 'left' | 'right' | 'up' | 'down' | null) {
         switch (direction) {
             case "left":
-                newX -= 1;
+                this.sprite.setVelocityX(-60)
+                this.sprite.play('walking', true)
                 break
             case "right":
-                newX += 1;
+                this.sprite.setVelocityX(60)
+                this.sprite.play('walking', true)
                 break
             case "up":
-                newY -= 1;
+                this.sprite.setVelocityY(-60)
+                this.sprite.play('walking', true)
                 break
             case "down":
-                newY += 1
+                this.sprite.setVelocityY(60)
+                this.sprite.play('walking', true)
+                break
+            default:
+                this.sprite.setVelocity(0, 0)
+                this.sprite.play('idle')
                 break
         }
-
-        this.setPosition(newX, newY)
     }
 }
