@@ -21,7 +21,7 @@
     "webpack-dev-server": "4.11.1"
   },
   "dependencies": {
-    "socket.io-client": "4.5.4",
-    "phaser": "3.55.2"
+    "phaser": "3.55.2",
+    "socket.io-client": "4.5.4"
   }
 }

@@ -11,6 +11,7 @@
 import Phaser from 'phaser'
 import {GAME_HEIGHT, GAME_WIDTH} from "./constants";
 import LoginScene from './scenes/LoginScene'
+import PlayerScene from "./scenes/PlayerScene";
 
 const game = new Phaser.Game({
     type: Phaser.AUTO,
@@ -21,5 +22,5 @@ const game = new Phaser.Game({
         height: GAME_HEIGHT,
     },
     pixelArt: true,
-    scene: [new LoginScene()]
+    scene: [new LoginScene(), new PlayerScene()]
 })
