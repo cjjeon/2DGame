@@ -25,11 +25,10 @@ export default class Warrior extends Phaser.GameObjects.Container {
     move(direction: 'left' | 'right' | 'up' | 'down' | null) {
         switch (direction) {
             case "left":
-                this.sprite.setVelocityX(-60)
-                this.sprite.play('walking', true)
+                this.sprite.setVelocityX(-60).setFlipX(true).play('walking', true)
                 break
             case "right":
-                this.sprite.setVelocityX(60)
+                this.sprite.setVelocityX(60).setFlipX(false).play('walking', true)
                 this.sprite.play('walking', true)
                 break
             case "up":
