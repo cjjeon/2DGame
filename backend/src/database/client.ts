@@ -1,9 +1,9 @@
 import {Sequelize} from "sequelize-typescript";
 import config from "../config";
-import User from "./models/User";
+import {Room, User} from "./models";
 
 const sequelize = new Sequelize({
-    models: [User],
+    models: [User, Room],
     database: config.DB_CONFIG.database,
     host: config.DB_CONFIG.host,
     username: config.DB_CONFIG.username,

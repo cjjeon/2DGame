@@ -1,14 +1,20 @@
+import cookie from 'cookie'
 import * as http from "http";
 import SocketIO from "socket.io";
 import {v4 as uuidv4} from 'uuid';
+import auth from "./auth";
+import {User} from "./database/models";
+import errors from "./errors";
 import Room from "./room";
 import {MovePositionData, ReceivedMessage, ReceivedMessageType} from "./type";
 
 export default function init(server: http.Server) {
     const socketServer = new SocketIO.Server(server, {
         cors: {
-            origin: '*',
-        }
+            origin: ['http://localhost:4000'],
+            allowedHeaders: ['Access-Control-Allow-Credentials'],
+            credentials: true,
+        },
     })
 
     // Currently only support 1 room
@@ -16,18 +22,31 @@ export default function init(server: http.Server) {
     const roomId = uuidv4()
     const room = new Room(roomId, socketServer);
 
-    socketServer.use((socket, next) => {
-        const userId = socket.handshake.auth.userId;
-        if (!userId) {
-            return next(new Error("invalid userId"))
+    socketServer.use(async (socket, next) => {
+        const cookies = cookie.parse(socket.request.headers.cookie || '');
+        if (!cookies) {
+            throw new errors.AuthenticationError()
         }
-        socket.userId = userId;
-        next();
+        const token = cookies.access_token;
+        if (!token) {
+            throw new errors.AuthenticationError()
+        }
+        const userToken = auth.verifyToken(token)
+        const user = await User.findOne({where: {id: userToken.id}})
+        if (!user) {
+            throw new errors.AuthenticationError()
+        }
+        socket.user = user
+        next()
     });
 
     socketServer.on('connection', (socket) => {
-        console.log(`${socket.userId} connected`);
-        room.addUser(socket.userId, socket);
+        if (!socket.user) {
+            throw new errors.AuthenticationError()
+        }
+        console.log(`${socket.user.username} connected`);
+
+        room.addUser(socket.user.id, socket);
 
         // Joining room for the user
         socket.join(roomId)

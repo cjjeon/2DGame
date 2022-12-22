@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import config from "./config";
-import User from "./database/models/User";
+import {User} from './database/models';
 import errors from './errors'
 
 

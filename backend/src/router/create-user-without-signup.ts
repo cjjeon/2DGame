@@ -3,7 +3,7 @@ import {Request, Response} from 'express'
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import auth from "../auth";
 import sequelize from "../database/client";
-import User from "../database/models/User";
+import {User} from "../database/models";
 import errors from "../errors";
 import serialize from "./serialize";
 

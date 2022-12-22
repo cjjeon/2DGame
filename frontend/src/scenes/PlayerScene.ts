@@ -1,11 +1,13 @@
 import Phaser from 'phaser'
+import WideButton from "../components/buttons/WideButton";
 import Warrior from "../components/character/Warrior";
+import BossRoomScene from "./BossRoomScene";
 
 export default class PlayerScene extends Phaser.Scene {
     static key: string = 'player-scene'
 
     private warrior: Warrior | undefined
-    private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined
+    private button: WideButton | undefined
 
     constructor() {
         super(PlayerScene.key);
@@ -13,26 +15,17 @@ export default class PlayerScene extends Phaser.Scene {
 
     preload() {
         Warrior.load(this)
+        WideButton.load(this)
     }
 
     create() {
-        this.warrior = new Warrior(this, 300, 400)
-        this.cursors = this.input.keyboard.createCursorKeys()
-
+        this.warrior = new Warrior(this, 300, 400, 4)
+        this.button = new WideButton(this, 1000, 400, 'Fight!')
+            .on(Phaser.Input.Events.POINTER_UP, () => {
+                this.scene.start(BossRoomScene.key)
+            })
     }
 
     update(time: number, delta: number) {
-        let direction: 'left' | 'right' | 'up' | 'down' | null = null
-
-        if (this.cursors?.left.isDown) {
-            direction = 'left'
-        } else if (this.cursors?.right.isDown) {
-            direction = 'right'
-        } else if (this.cursors?.up.isDown) {
-            direction = 'up'
-        } else if (this.cursors?.down.isDown) {
-            direction = 'down'
-        }
-        this.warrior?.move(direction)
     }
 }
