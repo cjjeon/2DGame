@@ -26,5 +26,5 @@ const game = new Phaser.Game({
         arcade: {}
     },
     pixelArt: true,
-    scene: [new PlayerScene(), new LoginScene()]
+    scene: [new LoginScene(), new PlayerScene()]
 })
