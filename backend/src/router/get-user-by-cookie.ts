@@ -3,7 +3,6 @@ import {Request, Response} from 'express'
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import sequelize from "../database/client";
 import User from "../database/models/User";
-import errors from "../errors";
 import serialize from "./serialize";
 
 
@@ -16,16 +15,11 @@ export class Payload {
 const createUserWithoutSignUp = async (req: Request, res: Response) => {
     const payload = await serialize(Payload, req.body)
     const username = uniqueNamesGenerator({dictionaries: [adjectives, colors, animals]})
+    console.log(payload, username)
+
     const transaction = await sequelize.transaction()
-
-    try {
-        await User.create({cookie: payload.cookie, username: username}, {transaction})
-        await transaction.commit()
-    } catch (error) {
-        await transaction.rollback()
-        throw new errors.DatabaseObjectExists()
-    }
-
+    const user = await User.create({cookie: payload.cookie, username: username}, {transaction})
+    await transaction.commit()
     res.send(200)
 }
 
