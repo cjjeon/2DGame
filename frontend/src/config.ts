@@ -1,1 +1,6 @@
-export const WEBSOCKET_SERVER_URL = "ws://localhost4001"
+const SERVER_URL = 'http://localhost:4001'
+
+
+export default {
+    SERVER_URL,
+}

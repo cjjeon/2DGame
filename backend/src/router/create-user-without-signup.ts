@@ -19,14 +19,13 @@ const createUserWithoutSignUp = async (req: Request, res: Response) => {
     const transaction = await sequelize.transaction()
 
     try {
-        await User.create({cookie: payload.cookie, username: username}, {transaction})
+        const user = await User.create({cookie: payload.cookie, username: username}, {transaction})
         await transaction.commit()
+        res.status(200).json(JSON.stringify(user))
     } catch (error) {
         await transaction.rollback()
         throw new errors.DatabaseObjectExists()
     }
-
-    res.send(200)
 }
 
 
