@@ -7,9 +7,9 @@ interface User {
 }
 
 export default async (): Promise<User> => {
-    const response = await fetch(`${config.SERVER_URL}/get-user-by-cookie`, {
+    const response = await fetch(`${config.SERVER_URL}/get-me`, {
         method: 'POST',
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -17,6 +17,7 @@ export default async (): Promise<User> => {
             'cookie': cookie.getFootprintCookie()
         })
     })
+
     if (response.status !== 200) {
         throw new Error()
     }

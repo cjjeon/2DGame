@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import createUserWithoutSignup from "../api/create-user-without-signup";
-import getUserByCookie from "../api/get-user-by-cookie";
+import getUserByCookie from "../api/get-me";
 import WideButton from "../components/buttons/WideButton";
 import {GAME_HEIGHT, GAME_WIDTH} from "../constants";
 import PlayerScene from "./PlayerScene";
@@ -14,7 +14,7 @@ export default class LoginScene extends Phaser.Scene {
         super(LoginScene.key);
         getUserByCookie().then(user => {
             this.scene.start(PlayerScene.key)
-        })
+        }).catch(() => null)
     }
 
     preload() {

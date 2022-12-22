@@ -1,6 +1,7 @@
 import {IsString} from 'class-validator';
 import {Request, Response} from 'express'
 import {adjectives, animals, colors, uniqueNamesGenerator} from "unique-names-generator";
+import auth from "../auth";
 import sequelize from "../database/client";
 import User from "../database/models/User";
 import errors from "../errors";
@@ -21,7 +22,11 @@ const createUserWithoutSignUp = async (req: Request, res: Response) => {
     try {
         const user = await User.create({cookie: payload.cookie, username: username}, {transaction})
         await transaction.commit()
-        res.status(200).json(JSON.stringify(user))
+        const token = auth.generateToken(user)
+        res.cookie("access_token", token, {
+            httpOnly: true,
+            secure: true
+        }).status(200).json(JSON.parse(JSON.stringify(user)))
     } catch (error) {
         await transaction.rollback()
         throw new errors.DatabaseObjectExists()

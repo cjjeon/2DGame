@@ -3,7 +3,7 @@ import cookie from "../cookie";
 export default async (): Promise<null> => {
     const response = await fetch('http://localhost:4001/create-user-without-signup', {
         method: 'POST',
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
