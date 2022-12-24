@@ -97,3 +97,69 @@
 // }
 //
 // export default init
+
+
+import {io, Socket as IoSocket} from "socket.io-client";
+import {Player, Room} from "./type";
+
+enum SocketState {
+    CONNECTED,
+    CONNECTING,
+    RECONNECTING,
+    DISCONNECTED,
+}
+
+class Socket {
+    public state: SocketState = SocketState.DISCONNECTED
+    public ping: number = 0
+    private socket: IoSocket
+
+    constructor() {
+        this.socket = io("ws://localhost:4001", {withCredentials: true, autoConnect: false})
+
+        this.socket.on('connect', () => {
+            console.log('socket is connected')
+            this.state = SocketState.RECONNECTING
+
+            setInterval(() => {
+                const start = Date.now()
+                if (this.socket.connected) {
+                    this.socket.emit('ping', () => {
+                        const duration = Date.now() - start;
+                        this.ping = duration
+                    })
+                }
+            }, 1000)
+        })
+
+        this.socket.on('reconnect', () => {
+            console.log('socket is reconnecting')
+            this.state = SocketState.RECONNECTING
+        })
+
+        this.socket.on('disconnect', () => {
+            console.log('socket is disconnected')
+            this.state = SocketState.DISCONNECTED
+        })
+    }
+
+    connect() {
+        this.socket.connect()
+        this.state = SocketState.CONNECTING
+    }
+
+    joinRoom() {
+        this.socket.emit('join_room')
+    }
+
+    onRoomJoin(callback: (room: Room) => void) {
+        this.socket.on('join-room', callback)
+    }
+
+    onPlayerJoin(callback: (player: Player) => void) {
+        this.socket.on('new-player', callback)
+    }
+}
+
+
+export default new Socket()

@@ -1,6 +1,12 @@
 import cookie from "../cookie";
 
-export default async (): Promise<null> => {
+interface User {
+    id: string
+    username: string
+}
+
+
+export default async (): Promise<User> => {
     const response = await fetch('http://localhost:4001/create-user-without-signup', {
         method: 'POST',
         credentials: 'include',
@@ -16,5 +22,5 @@ export default async (): Promise<null> => {
         throw Error()
     }
 
-    return null
+    return response.json()
 }

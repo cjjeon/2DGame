@@ -1,12 +1,10 @@
 import cookie from 'cookie'
 import * as http from "http";
 import SocketIO from "socket.io";
-import {v4 as uuidv4} from 'uuid';
 import auth from "./auth";
 import {User} from "./database/models";
 import errors from "./errors";
-import Room from "./room";
-import {MovePositionData, ReceivedMessage, ReceivedMessageType} from "./type";
+import RoomsController from "./rooms-controller";
 
 export default function init(server: http.Server) {
     const socketServer = new SocketIO.Server(server, {
@@ -17,10 +15,7 @@ export default function init(server: http.Server) {
         },
     })
 
-    // Currently only support 1 room
-    // TODO figure out how to make it multiple rooms
-    const roomId = uuidv4()
-    const room = new Room(roomId, socketServer);
+    const roomController = new RoomsController(socketServer)
 
     socketServer.use(async (socket, next) => {
         const cookies = cookie.parse(socket.request.headers.cookie || '');
@@ -45,18 +40,18 @@ export default function init(server: http.Server) {
             throw new errors.AuthenticationError()
         }
         console.log(`${socket.user.username} connected`);
+        const user = socket.user
+        socket.on('join_room', async () => {
+            const {room, player} = await roomController.joinRoomForPlayer(user);
+            // Send Room information to the new user
+            console.log("Sending Room Info: ", room)
+            socket.emit('join-room', room);
 
-        room.addUser(socket.user.id, socket);
+            // Send New Player to server
+            socketServer.to(room.id).emit('new-player', player);
 
-        // Joining room for the user
-        socket.join(roomId)
-
-        socket.on('message', (message: ReceivedMessage) => {
-            if (message.type === ReceivedMessageType.MOVE_POSITION) {
-                const data = message.data as MovePositionData
-                room.updatePlayerPosition(socket.userId, data.position)
-            }
-            socket.send("message received!")
+            // Add the player to socket room
+            socket.join(room.id);
         })
 
         socket.on('ping', (callback) => {
@@ -65,7 +60,6 @@ export default function init(server: http.Server) {
 
         socket.on('disconnect', () => {
             console.log('user disconnected');
-            room.removeUser(socket.userId)
         });
     })
 }

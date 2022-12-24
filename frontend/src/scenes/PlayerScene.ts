@@ -1,6 +1,8 @@
 import Phaser from 'phaser'
 import WideButton from "../components/buttons/WideButton";
 import Warrior from "../components/character/Warrior";
+import {USER} from "../constants";
+import socket from "../socket";
 import BossRoomScene from "./BossRoomScene";
 
 export default class PlayerScene extends Phaser.Scene {
@@ -15,13 +17,13 @@ export default class PlayerScene extends Phaser.Scene {
 
     preload() {
         Warrior.load(this)
-        WideButton.load(this)
     }
 
     create() {
-        this.warrior = new Warrior(this, 300, 400, 4)
+        this.warrior = new Warrior(this, 300, 400, USER.username, 3)
         this.button = new WideButton(this, 1000, 400, 'Fight!')
             .on(Phaser.Input.Events.POINTER_UP, () => {
+                socket.joinRoom()
                 this.scene.start(BossRoomScene.key)
             })
     }

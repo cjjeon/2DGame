@@ -8,7 +8,7 @@ export class Room extends Model {
         defaultValue: DataType.UUIDV4,
     })
     id: string;
-
+    
     @Column({
         type: DataType.BOOLEAN
     })
