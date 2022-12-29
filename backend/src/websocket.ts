@@ -5,6 +5,7 @@ import auth from "./auth";
 import {User} from "./database/models";
 import errors from "./errors";
 import RoomsController from "./rooms-controller";
+import {ActionData} from "./type";
 
 export default function init(server: http.Server) {
     const socketServer = new SocketIO.Server(server, {
@@ -43,15 +44,23 @@ export default function init(server: http.Server) {
         const user = socket.user
         socket.on('join_room', async () => {
             const {room, player} = await roomController.joinRoomForPlayer(user);
-            // Send Room information to the new user
-            console.log("Sending Room Info: ", room)
-            socket.emit('join-room', room);
+            user.roomId = room.id
+            await user.save()
 
+            // Send Room information to the new user
+            socket.emit('join-room', room);
             // Send New Player to server
             socketServer.to(room.id).emit('new-player', player);
 
             // Add the player to socket room
             socket.join(room.id);
+        })
+
+        socket.on('player-action', (actionData: ActionData) => {
+            console.log(user.roomId, actionData)
+
+            const room = roomController.getRoom(user.roomId)
+
         })
 
         socket.on('ping', (callback) => {

@@ -14,6 +14,26 @@ class RoomsController {
     constructor(socketServer: SocketIO.Server) {
         this.rooms = {}
         this.socketServer = socketServer
+
+        setInterval(this.runGameServer.bind(this), 1000)
+    }
+
+
+    runGameServer() {
+        console.log(`Running Gamer Servers for ${Object.keys(this.rooms).length} rooms`)
+        for (const roomId of Object.keys(this.rooms)) {
+            const room = this.rooms[roomId]
+            if (room.status === RoomStatus.WAITING && room.players.length >= 3) {
+                console.log("Game Start!")
+                room.status = RoomStatus.STARTED
+                this.socketServer.to(room.id).emit('game-start')
+            }
+        }
+    }
+
+    getRoom(roomId: string): Room | null {
+        if (roomId in this.rooms) return this.rooms[roomId]
+        return null
     }
 
     async joinRoomForPlayer(user: User): Promise<{ room: Room, player: Player }> {
@@ -45,15 +65,12 @@ class RoomsController {
                 }
 
                 room.players.push(player)
-                room.status = room.players.length === 3 ? RoomStatus.STARTED : RoomStatus.WAITING
                 return {room, player}
             }
         }
 
         // Otherwise, create a room
         const dbRoom = await DbRoom.create({isComplete: false})
-        user.roomId = dbRoom.id
-        user.save()
 
         const room: Room = {
             id: dbRoom.id,
@@ -66,6 +83,7 @@ class RoomsController {
         this.rooms[dbRoom.id] = room
         return {room, player}
     }
+
 }
 
 

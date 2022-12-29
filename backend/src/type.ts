@@ -26,3 +26,20 @@ export interface Room {
     players: Player[]
     boss: Boss
 }
+
+export enum ActionType {
+    MOVE = 'MOVE',
+    CLICK_MOVE = 'CLICK_MOVE'
+}
+
+export interface MoveData {
+    directionY: 'up' | 'down' | null
+    directionX: 'left' | 'right' | null
+}
+
+export interface ClickMoveData {
+    x: number,
+    y: number
+}
+
+export type ActionData = MoveData | ClickMoveData

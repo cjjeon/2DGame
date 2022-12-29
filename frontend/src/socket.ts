@@ -100,7 +100,7 @@
 
 
 import {io, Socket as IoSocket} from "socket.io-client";
-import {Player, Room} from "./type";
+import {ActionData, ActionType, Player, Room} from "./type";
 
 enum SocketState {
     CONNECTED,
@@ -156,8 +156,23 @@ class Socket {
         this.socket.on('join-room', callback)
     }
 
+    onGameStart(callback: () => void) {
+        this.socket.on('game-start', callback)
+    }
+
     onPlayerJoin(callback: (player: Player) => void) {
         this.socket.on('new-player', callback)
+    }
+
+    onPlayerUpdate(callback: (player: Player, actionType: ActionType, actionData: ActionData) => void) {
+        this.socket.on('player-update', callback)
+    }
+
+    onPlayerAction(actionType: ActionType, actionData: ActionData) {
+        this.socket.emit('player-action', {
+            actionType,
+            actionData
+        })
     }
 }
 
