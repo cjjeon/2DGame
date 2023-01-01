@@ -1,7 +1,8 @@
 import Phaser from 'phaser'
 import Warrior from "../components/character/Warrior";
+import LavaMap from "../components/map/LavaMap";
 import socket from "../socket";
-import {ActionData, ActionType, Player, Room} from "../type";
+import {ActionType, Player, PlayerUpdateProp, Room} from "../type";
 
 export default class BossRoomScene extends Phaser.Scene {
     static key: string = 'boss-room-scene'
@@ -21,16 +22,21 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     preload() {
+        LavaMap.load(this)
     }
 
     create() {
+        const map = new LavaMap(this)
         this.input.mouse.disableContextMenu();
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            if (pointer.rightButtonDown()) {
+        this.input.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => {
+            if (pointer.rightButtonReleased()) {
                 if (this.gameStarted) {
-                    socket.onPlayerAction(ActionType.MOVE, {
-                        x: pointer.x,
-                        y: pointer.y
+                    socket.onPlayerAction({
+                        actionType: ActionType.MOVE,
+                        actionData: {
+                            x: pointer.x,
+                            y: pointer.y
+                        }
                     })
                 }
             }
@@ -49,11 +55,13 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     addPlayer(player: Player) {
-        const warrior = new Warrior(this, player.position.x, player.position.y, player.username, 1)
+        const warrior = new Warrior(this, player.position.x, player.position.y, player.username, 0.7)
+        warrior.depth = 1
         this.players.push(warrior)
     }
 
-    updatePlayer(player: Player, actionType: ActionType, actionData: ActionData) {
+    updatePlayer({player, actionType, actionData}: PlayerUpdateProp) {
+        console.log("updating player")
     }
 
     startGame() {

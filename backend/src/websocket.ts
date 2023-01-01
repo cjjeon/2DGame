@@ -5,7 +5,7 @@ import auth from "./auth";
 import {User} from "./database/models";
 import errors from "./errors";
 import RoomsController from "./rooms-controller";
-import {ActionData} from "./type";
+import {PlayerActionProp} from "./type";
 
 export default function init(server: http.Server) {
     const socketServer = new SocketIO.Server(server, {
@@ -21,16 +21,22 @@ export default function init(server: http.Server) {
     socketServer.use(async (socket, next) => {
         const cookies = cookie.parse(socket.request.headers.cookie || '');
         if (!cookies) {
-            throw new errors.AuthenticationError()
+            console.error("Missing cookies in the header")
+            next(new errors.AuthenticationError())
+            return
         }
         const token = cookies.access_token;
         if (!token) {
-            throw new errors.AuthenticationError()
+            console.error("Missing access token in the header")
+            next(new errors.AuthenticationError())
+            return
         }
         const userToken = auth.verifyToken(token)
         const user = await User.findOne({where: {id: userToken.id}})
         if (!user) {
-            throw new errors.AuthenticationError()
+            console.error("Unable to find user information")
+            next(new errors.AuthenticationError())
+            return
         }
         socket.user = user
         next()
@@ -38,7 +44,9 @@ export default function init(server: http.Server) {
 
     socketServer.on('connection', (socket) => {
         if (!socket.user) {
-            throw new errors.AuthenticationError()
+            console.error("Authorization Error")
+            socket.disconnect()
+            return
         }
         console.log(`${socket.user.username} connected`);
         const user = socket.user
@@ -56,11 +64,13 @@ export default function init(server: http.Server) {
             socket.join(room.id);
         })
 
-        socket.on('player-action', (actionData: ActionData) => {
-            console.log(user.roomId, actionData)
+        socket.on('player-action', ({actionType, actionData}: PlayerActionProp) => {
+            console.log(actionType, actionData)
+            const player = roomController.updatePlayer(user.roomId, user.id, actionType, actionData)
 
-            const room = roomController.getRoom(user.roomId)
-
+            if (player) {
+                socketServer.to(user.roomId).emit('player-update', player)
+            }
         })
 
         socket.on('ping', (callback) => {

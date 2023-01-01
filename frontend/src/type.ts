@@ -43,3 +43,14 @@ export interface ClickMoveData {
 }
 
 export type ActionData = MoveData | ClickMoveData
+
+export interface PlayerActionProp {
+    actionType: ActionType,
+    actionData: ActionData
+}
+
+export interface PlayerUpdateProp {
+    player: Player,
+    actionType: ActionType,
+    actionData: ActionData
+}

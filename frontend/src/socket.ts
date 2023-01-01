@@ -100,9 +100,9 @@
 
 
 import {io, Socket as IoSocket} from "socket.io-client";
-import {ActionData, ActionType, Player, Room} from "./type";
+import {Player, PlayerActionProp, PlayerUpdateProp, Room} from "./type";
 
-enum SocketState {
+export enum SocketState {
     CONNECTED,
     CONNECTING,
     RECONNECTING,
@@ -130,6 +130,11 @@ class Socket {
                     })
                 }
             }, 1000)
+        })
+
+        this.socket.on('connect_error', (reason) => {
+            console.error(`socket connection error, ${reason.name}`)
+            this.state = SocketState.DISCONNECTED
         })
 
         this.socket.on('reconnect', () => {
@@ -164,15 +169,17 @@ class Socket {
         this.socket.on('new-player', callback)
     }
 
-    onPlayerUpdate(callback: (player: Player, actionType: ActionType, actionData: ActionData) => void) {
+    onPlayerUpdate(callback: (props: PlayerUpdateProp) => void) {
         this.socket.on('player-update', callback)
     }
 
-    onPlayerAction(actionType: ActionType, actionData: ActionData) {
-        this.socket.emit('player-action', {
-            actionType,
-            actionData
-        })
+    onPlayerAction(props: PlayerActionProp) {
+        this.socket.emit('player-action', props)
+    }
+
+    onDisconnect(callback: () => void) {
+        this.socket.on('disconnect', callback)
+        this.socket.on('connect_error', callback)
     }
 }
 

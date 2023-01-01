@@ -1,5 +1,4 @@
 import config from "../config"
-import cookie from "../cookie";
 
 interface User {
     id: string
@@ -13,9 +12,6 @@ export default async (): Promise<User> => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            'cookie': cookie.getFootprintCookie()
-        })
     })
 
     if (response.status !== 200) {

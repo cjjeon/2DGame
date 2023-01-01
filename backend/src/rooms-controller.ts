@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
 import {Room as DbRoom, User} from "./database/models";
-import {Player, Room, RoomStatus} from "./type";
+import {ActionData, ActionType, ClickMoveData, Player, Room, RoomStatus} from "./type";
 
 
 interface Rooms {
@@ -31,9 +31,21 @@ class RoomsController {
         }
     }
 
-    getRoom(roomId: string): Room | null {
-        if (roomId in this.rooms) return this.rooms[roomId]
-        return null
+    updatePlayer(roomId: string, userId: string, actionType: ActionType, actionData: ActionData): Player | null {
+        if (!(roomId in this.rooms)) return null
+        const room = this.rooms[roomId]
+        const player = room.players.find(player => player.userId === userId)
+        if (!player) return null
+
+        switch (actionType) {
+            case ActionType.MOVE:
+                const data = actionData as ClickMoveData
+                player.position.x = data.x
+                player.position.y = data.y
+                break
+        }
+
+        return player
     }
 
     async joinRoomForPlayer(user: User): Promise<{ room: Room, player: Player }> {

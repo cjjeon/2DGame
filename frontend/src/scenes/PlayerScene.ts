@@ -4,6 +4,7 @@ import Warrior from "../components/character/Warrior";
 import {USER} from "../constants";
 import socket from "../socket";
 import BossRoomScene from "./BossRoomScene";
+import LoginScene from "./LoginScene";
 
 export default class PlayerScene extends Phaser.Scene {
     static key: string = 'player-scene'
@@ -13,6 +14,9 @@ export default class PlayerScene extends Phaser.Scene {
 
     constructor() {
         super(PlayerScene.key);
+        socket.onDisconnect(() => {
+            this.scene.start(LoginScene.key)
+        })
     }
 
     preload() {

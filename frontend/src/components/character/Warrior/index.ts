@@ -19,6 +19,7 @@ export default class Warrior extends Phaser.GameObjects.Container {
         this.add(this.sprite)
 
         this.username = this.scene.add.text(-1 * this.sprite.displayWidth / 2, this.sprite.displayHeight / 2, username)
+        this.username.setScale(scale)
         this.add(this.username)
     }
 
