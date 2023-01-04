@@ -46,7 +46,7 @@
    },
    {
     "filename": "5",
-    "frame": { "x": 41, "y": 58, "w": 37, "h": 57 },
+    "frame": { "x": 80, "y": 1, "w": 37, "h": 57 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 12, "y": 5, "w": 35, "h": 55 },
@@ -55,7 +55,7 @@
    },
    {
     "filename": "6",
-    "frame": { "x": 79, "y": 58, "w": 37, "h": 57 },
+    "frame": { "x": 118, "y": 1, "w": 37, "h": 57 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 12, "y": 5, "w": 35, "h": 55 },
@@ -70,6 +70,33 @@
     "spriteSourceSize": { "x": 12, "y": 5, "w": 35, "h": 55 },
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 100
+   },
+   {
+    "filename": "8",
+    "frame": { "x": 118, "y": 1, "w": 37, "h": 57 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 12, "y": 5, "w": 35, "h": 55 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "9",
+    "frame": { "x": 80, "y": 1, "w": 37, "h": 57 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 12, "y": 5, "w": 35, "h": 55 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "10",
+    "frame": { "x": 1, "y": 1, "w": 39, "h": 57 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 12, "y": 5, "w": 37, "h": 55 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
    }
  ],
  "meta": {
@@ -77,11 +104,11 @@
   "version": "1.2.40-x64",
   "image": "warrior_character.png",
   "format": "RGBA8888",
-  "size": { "w": 116, "h": 115 },
+  "size": { "w": 155, "h": 115 },
   "scale": "1",
   "frameTags": [
-   { "name": "idle", "from": 0, "to": 3, "direction": "forward" },
-   { "name": "walking", "from": 4, "to": 7, "direction": "forward" }
+   { "name": "warrior-idle", "from": 0, "to": 3, "direction": "forward" },
+   { "name": "warrior-walking", "from": 4, "to": 9, "direction": "forward" }
   ],
   "layers": [
    { "name": "idle", "opacity": 255, "blendMode": "normal" }

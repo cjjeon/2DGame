@@ -20,6 +20,7 @@ export default class PlayerScene extends Phaser.Scene {
     }
 
     preload() {
+        WideButton.load(this)
         Warrior.load(this)
     }
 

@@ -5,6 +5,7 @@ export interface Position {
 
 export interface Boss {
     health: number
+    position: Position
 }
 
 export interface Player {

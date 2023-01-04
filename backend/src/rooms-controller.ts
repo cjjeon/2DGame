@@ -23,7 +23,7 @@ class RoomsController {
         console.log(`Running Gamer Servers for ${Object.keys(this.rooms).length} rooms`)
         for (const roomId of Object.keys(this.rooms)) {
             const room = this.rooms[roomId]
-            if (room.status === RoomStatus.WAITING && room.players.length >= 3) {
+            if (room.status === RoomStatus.WAITING && room.players.length >= 1) {
                 console.log("Game Start!")
                 room.status = RoomStatus.STARTED
                 this.socketServer.to(room.id).emit('game-start')
@@ -89,6 +89,10 @@ class RoomsController {
             players: [player],
             boss: {
                 health: 100,
+                position: {
+                    x: 320 * 2,
+                    y: 180
+                }
             },
             status: RoomStatus.WAITING,
         }

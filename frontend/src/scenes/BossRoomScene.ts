@@ -1,14 +1,16 @@
 import Phaser from 'phaser'
 import Warrior from "../components/character/Warrior";
 import LavaMap from "../components/map/LavaMap";
+import Orc from "../components/monster/Orc";
 import socket from "../socket";
-import {ActionType, Player, PlayerUpdateProp, Room} from "../type";
+import {ActionType, Boss, Player, PlayerUpdateProp, Room} from "../type";
 
 export default class BossRoomScene extends Phaser.Scene {
     static key: string = 'boss-room-scene'
 
     private gameStarted: boolean = false
     private text: Phaser.GameObjects.Text | null
+    private orc?: Orc
     private players: Warrior[] = []
 
     constructor() {
@@ -23,6 +25,8 @@ export default class BossRoomScene extends Phaser.Scene {
 
     preload() {
         LavaMap.load(this)
+        Warrior.load(this)
+        Orc.load(this)
     }
 
     create() {
@@ -52,6 +56,13 @@ export default class BossRoomScene extends Phaser.Scene {
         room.players.forEach((player) => {
             this.addPlayer(player)
         })
+
+        this.addBoss(room.boss)
+    }
+
+    addBoss(boss: Boss) {
+        this.orc = new Orc(this, boss.position.x, boss.position.y, 3)
+        this.orc.depth = 1
     }
 
     addPlayer(player: Player) {

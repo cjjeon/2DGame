@@ -14,7 +14,7 @@ export default class Warrior extends Phaser.GameObjects.Container {
 
         const tags = this.scene.anims.createFromAseprite(Warrior.key)
 
-        this.sprite = this.scene.physics.add.sprite(0, 0, Warrior.key).play({key: 'idle', repeat: -1})
+        this.sprite = this.scene.physics.add.sprite(0, 0, Warrior.key).play({key: 'warrior-idle', repeat: -1})
         this.sprite.setScale(scale)
         this.add(this.sprite)
 
@@ -30,23 +30,23 @@ export default class Warrior extends Phaser.GameObjects.Container {
     move(direction: 'left' | 'right' | 'up' | 'down' | null) {
         switch (direction) {
             case "left":
-                this.sprite.setVelocityX(-60).setFlipX(true).play('walking', true)
+                this.sprite.setVelocityX(-60).setFlipX(true).play('warrior-walking', true)
                 break
             case "right":
-                this.sprite.setVelocityX(60).setFlipX(false).play('walking', true)
-                this.sprite.play('walking', true)
+                this.sprite.setVelocityX(60).setFlipX(false).play('warrior-walking', true)
+                this.sprite.play('warrior-walking', true)
                 break
             case "up":
                 this.sprite.setVelocityY(-60)
-                this.sprite.play('walking', true)
+                this.sprite.play('warrior-walking', true)
                 break
             case "down":
                 this.sprite.setVelocityY(60)
-                this.sprite.play('walking', true)
+                this.sprite.play('warrior-walking', true)
                 break
             default:
                 this.sprite.setVelocity(0, 0)
-                this.sprite.play('idle', true)
+                this.sprite.play('warrior-idle', true)
                 break
         }
     }
