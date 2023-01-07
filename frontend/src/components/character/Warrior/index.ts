@@ -13,7 +13,7 @@ export default class Warrior extends Phaser.GameObjects.Container {
         this.scene.add.existing(this)
 
         const tags = this.scene.anims.createFromAseprite(Warrior.key)
-
+        
         this.sprite = this.scene.physics.add.sprite(0, 0, Warrior.key).play({key: 'warrior-idle', repeat: -1})
         this.sprite.setScale(scale)
         this.add(this.sprite)
@@ -25,6 +25,10 @@ export default class Warrior extends Phaser.GameObjects.Container {
 
     static load = (scene: Phaser.Scene) => {
         scene.load.aseprite(Warrior.key, Warrior.image, WarriorJson)
+    }
+
+    update() {
+
     }
 
     move(direction: 'left' | 'right' | 'up' | 'down' | null) {

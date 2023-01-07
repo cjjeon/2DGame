@@ -3,6 +3,7 @@ import {GAME_HEIGHT, GAME_WIDTH} from "./constants";
 import BossRoomScene from "./scenes/BossRoomScene";
 import LoginScene from "./scenes/LoginScene";
 import PlayerScene from "./scenes/PlayerScene";
+import Preloader from "./scenes/Preloader";
 
 const game = new Phaser.Game({
     type: Phaser.AUTO,
@@ -19,6 +20,7 @@ const game = new Phaser.Game({
     pixelArt: true,
     scene: [
         // TestScene,
+        Preloader,
         LoginScene,
         PlayerScene,
         BossRoomScene

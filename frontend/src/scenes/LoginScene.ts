@@ -21,7 +21,6 @@ export default class LoginScene extends Phaser.Scene {
     }
 
     preload() {
-        WideButton.load(this)
     }
 
     create() {

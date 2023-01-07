@@ -9,6 +9,7 @@ export default class BossRoomScene extends Phaser.Scene {
     static key: string = 'boss-room-scene'
 
     private gameStarted: boolean = false
+    private cursor?: Phaser.Types.Input.Keyboard.CursorKeys
     private text: Phaser.GameObjects.Text | null
     private orc?: Orc
     private players: Warrior[] = []
@@ -24,9 +25,6 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     preload() {
-        LavaMap.load(this)
-        Warrior.load(this)
-        Orc.load(this)
     }
 
     create() {
@@ -46,10 +44,27 @@ export default class BossRoomScene extends Phaser.Scene {
             }
         })
 
+        this.cursor = this.input.keyboard.createCursorKeys()
         this.text = this.add.text(0, 0, 'Waiting for other users...')
     }
 
     update(time: number, delta: number) {
+        if (!this.gameStarted) return
+
+        let direction: 'left' | 'right' | 'up' | 'down' | null = null
+        if (this.cursor?.left.isDown) {
+            direction = "left"
+        }
+        if (this.cursor?.right.isDown) {
+            direction = "right"
+        }
+        if (this.cursor?.up.isDown) {
+            direction = "up"
+        }
+        if (this.cursor?.down.isDown) {
+            direction = "down"
+        }
+        this.players[0].move(direction)
     }
 
     joinRoom(room: Room) {
