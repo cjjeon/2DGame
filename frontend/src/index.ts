@@ -19,7 +19,6 @@ const game = new Phaser.Game({
     },
     pixelArt: true,
     scene: [
-        // TestScene,
         Preloader,
         LoginScene,
         PlayerScene,

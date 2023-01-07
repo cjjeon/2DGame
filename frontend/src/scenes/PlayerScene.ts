@@ -19,11 +19,8 @@ export default class PlayerScene extends Phaser.Scene {
         })
     }
 
-    preload() {
-    }
-
     create() {
-        this.warrior = new Warrior(this, 300, 400, USER.username, 3)
+        this.warrior = new Warrior(this, USER.id, 300, 400, 3)
         this.button = new WideButton(this, 1000, 400, 'Fight!')
             .on(Phaser.Input.Events.POINTER_UP, () => {
                 socket.joinRoom()

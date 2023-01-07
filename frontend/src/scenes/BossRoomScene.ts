@@ -3,7 +3,7 @@ import Warrior from "../components/character/Warrior";
 import LavaMap from "../components/map/LavaMap";
 import Orc from "../components/monster/Orc";
 import socket from "../socket";
-import {ActionType, Boss, Player, PlayerUpdateProp, Room} from "../type";
+import {ActionType, Boss, ClickMoveData, Player, PlayerUpdateProp, Room} from "../type";
 
 export default class BossRoomScene extends Phaser.Scene {
     static key: string = 'boss-room-scene'
@@ -24,9 +24,6 @@ export default class BossRoomScene extends Phaser.Scene {
         this.text = null
     }
 
-    preload() {
-    }
-
     create() {
         const map = new LavaMap(this)
         this.input.mouse.disableContextMenu();
@@ -34,7 +31,7 @@ export default class BossRoomScene extends Phaser.Scene {
             if (pointer.rightButtonReleased()) {
                 if (this.gameStarted) {
                     socket.onPlayerAction({
-                        actionType: ActionType.MOVE,
+                        actionType: ActionType.CLICK_MOVE,
                         actionData: {
                             x: pointer.x,
                             y: pointer.y
@@ -49,22 +46,7 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
-        if (!this.gameStarted) return
-
-        let direction: 'left' | 'right' | 'up' | 'down' | null = null
-        if (this.cursor?.left.isDown) {
-            direction = "left"
-        }
-        if (this.cursor?.right.isDown) {
-            direction = "right"
-        }
-        if (this.cursor?.up.isDown) {
-            direction = "up"
-        }
-        if (this.cursor?.down.isDown) {
-            direction = "down"
-        }
-        this.players[0].move(direction)
+        this.players.forEach(player => player.update())
     }
 
     joinRoom(room: Room) {
@@ -81,13 +63,21 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     addPlayer(player: Player) {
-        const warrior = new Warrior(this, player.position.x, player.position.y, player.username, 0.7)
+        const warrior = new Warrior(this, player.userId, player.position.x, player.position.y, 0.7)
         warrior.depth = 1
         this.players.push(warrior)
     }
 
     updatePlayer({player, actionType, actionData}: PlayerUpdateProp) {
-        console.log("updating player")
+        console.log(`updating player ${player}, ${actionType} ${actionData}`)
+        this.players.forEach(p => {
+            if (p.userId === player.userId) {
+                if (actionType === ActionType.CLICK_MOVE) {
+                    const data = actionData as ClickMoveData
+                    p.setMovePosition(data)
+                }
+            }
+        })
     }
 
     startGame() {

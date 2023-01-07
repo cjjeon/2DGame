@@ -1,57 +1,78 @@
+import {Position} from "../../../type";
 import WarriorJson from './warrior_character.json'
 import WarriorImage from './warrior_character.png'
+
 
 export default class Warrior extends Phaser.GameObjects.Container {
     static key: string = 'warrior'
     static image: string = WarriorImage
 
-    private username: Phaser.GameObjects.Text
+    public userId: string
     private sprite: Phaser.Physics.Arcade.Sprite
+    private speed: number = 60;
+    private moveToPosition: Position | null = null // Moving to specific position
 
-    constructor(scene: Phaser.Scene, x: number, y: number, username: string, scale: number = 1) {
+    constructor(scene: Phaser.Scene, userId: string, x: number, y: number, scale: number = 1) {
         super(scene, x, y);
+        this.userId = userId
         this.scene.add.existing(this)
 
         const tags = this.scene.anims.createFromAseprite(Warrior.key)
-        
+
         this.sprite = this.scene.physics.add.sprite(0, 0, Warrior.key).play({key: 'warrior-idle', repeat: -1})
         this.sprite.setScale(scale)
         this.add(this.sprite)
 
-        this.username = this.scene.add.text(-1 * this.sprite.displayWidth / 2, this.sprite.displayHeight / 2, username)
-        this.username.setScale(scale)
-        this.add(this.username)
+        // Adding physics body to container
+        this.scene.physics.world.enable(this);
     }
 
     static load = (scene: Phaser.Scene) => {
         scene.load.aseprite(Warrior.key, Warrior.image, WarriorJson)
     }
 
-    update() {
-
+    setMovePosition(position: Position) {
+        this.moveToPosition = position
     }
 
-    move(direction: 'left' | 'right' | 'up' | 'down' | null) {
-        switch (direction) {
-            case "left":
-                this.sprite.setVelocityX(-60).setFlipX(true).play('warrior-walking', true)
-                break
-            case "right":
-                this.sprite.setVelocityX(60).setFlipX(false).play('warrior-walking', true)
-                this.sprite.play('warrior-walking', true)
-                break
-            case "up":
-                this.sprite.setVelocityY(-60)
-                this.sprite.play('warrior-walking', true)
-                break
-            case "down":
-                this.sprite.setVelocityY(60)
-                this.sprite.play('warrior-walking', true)
-                break
-            default:
-                this.sprite.setVelocity(0, 0)
-                this.sprite.play('warrior-idle', true)
-                break
+    update() {
+        if (this.moveToPosition) {
+            let dx = this.moveToPosition.x - this.x
+            let dy = this.moveToPosition.y - this.y
+
+            if (Math.abs(dx) < 10) {
+                dx = 0
+            }
+            if (Math.abs(dy) < 10) {
+                dy = 0
+            }
+
+            this.move(dx, dy)
         }
+    }
+
+    move(dx: number, dy: number) {
+        if (dx === 0 && dy === 0) {
+            (this.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0)
+            this.sprite.play('warrior-idle', true)
+            this.moveToPosition = null
+            return
+        }
+
+        if (dx < 0) {
+            (this.body as Phaser.Physics.Arcade.Body).setVelocityX(-1 * this.speed)
+            this.sprite.setFlipX(true)
+        } else if (dx > 0) {
+            (this.body as Phaser.Physics.Arcade.Body).setVelocityX(this.speed)
+            this.sprite.setFlipX(false)
+        }
+
+        if (dy < 0) {
+            (this.body as Phaser.Physics.Arcade.Body).setVelocityY(-1 * this.speed)
+        } else if (dy > 0) {
+            (this.body as Phaser.Physics.Arcade.Body).setVelocityY(this.speed)
+        }
+
+        this.sprite.play('warrior-walking', true)
     }
 }

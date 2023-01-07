@@ -65,11 +65,10 @@ export default function init(server: http.Server) {
         })
 
         socket.on('player-action', ({actionType, actionData}: PlayerActionProp) => {
-            console.log(actionType, actionData)
             const player = roomController.updatePlayer(user.roomId, user.id, actionType, actionData)
 
             if (player) {
-                socketServer.to(user.roomId).emit('player-update', player)
+                socketServer.to(user.roomId).emit('player-update', {player, actionType, actionData})
             }
         })
 

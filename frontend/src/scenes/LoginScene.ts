@@ -20,9 +20,6 @@ export default class LoginScene extends Phaser.Scene {
         }).catch(() => null)
     }
 
-    preload() {
-    }
-
     create() {
         this.wideButton = new WideButton(this, GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Login')
         this.wideButton.on(Phaser.Input.Events.POINTER_UP, async () => {
