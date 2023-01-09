@@ -30,7 +30,8 @@ export interface Room {
 
 export enum ActionType {
     MOVE = 'MOVE',
-    CLICK_MOVE = 'CLICK_MOVE'
+    CLICK_MOVE = 'CLICK_MOVE',
+    SKILL_1 = 'SKILL_1'
 }
 
 export interface MoveData {
@@ -43,7 +44,7 @@ export interface ClickMoveData {
     y: number
 }
 
-export type ActionData = MoveData | ClickMoveData
+export type ActionData = MoveData | ClickMoveData | null
 
 export interface PlayerActionProp {
     actionType: ActionType,

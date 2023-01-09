@@ -9,7 +9,6 @@ export default class BossRoomScene extends Phaser.Scene {
     static key: string = 'boss-room-scene'
 
     private gameStarted: boolean = false
-    private cursor?: Phaser.Types.Input.Keyboard.CursorKeys
     private text: Phaser.GameObjects.Text | null
     private orc?: Orc
     private players: Warrior[] = []
@@ -41,7 +40,14 @@ export default class BossRoomScene extends Phaser.Scene {
             }
         })
 
-        this.cursor = this.input.keyboard.createCursorKeys()
+        this.input.keyboard.on('keyup-Q', () => {
+            socket.onPlayerAction({
+                actionType: ActionType.SKILL_1,
+                actionData: null
+            })
+        })
+
+
         this.text = this.add.text(0, 0, 'Waiting for other users...')
     }
 
@@ -69,19 +75,19 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     updatePlayer({player, actionType, actionData}: PlayerUpdateProp) {
-        console.log(`updating player ${player}, ${actionType} ${actionData}`)
         this.players.forEach(p => {
             if (p.userId === player.userId) {
                 if (actionType === ActionType.CLICK_MOVE) {
                     const data = actionData as ClickMoveData
                     p.setMovePosition(data)
+                } else if (actionType === ActionType.SKILL_1) {
+                    p.skill()
                 }
             }
         })
     }
 
     startGame() {
-        console.log('game start')
         if (this.text) {
             let count = 3
             const timer = setInterval(() => {

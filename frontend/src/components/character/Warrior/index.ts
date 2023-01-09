@@ -1,4 +1,5 @@
 import {Position} from "../../../type";
+import BlueLaser from "../../skills/BlueLaser";
 import WarriorJson from './warrior_character.json'
 import WarriorImage from './warrior_character.png'
 
@@ -12,6 +13,8 @@ export default class Warrior extends Phaser.GameObjects.Container {
     private speed: number = 60;
     private moveToPosition: Position | null = null // Moving to specific position
 
+    private skill1: BlueLaser
+
     constructor(scene: Phaser.Scene, userId: string, x: number, y: number, scale: number = 1) {
         super(scene, x, y);
         this.userId = userId
@@ -22,6 +25,10 @@ export default class Warrior extends Phaser.GameObjects.Container {
         this.sprite = this.scene.physics.add.sprite(0, 0, Warrior.key).play({key: 'warrior-idle', repeat: -1})
         this.sprite.setScale(scale)
         this.add(this.sprite)
+
+        this.skill1 = new BlueLaser(scene, 0, 0)
+        this.skill1.visible = false
+        this.add(this.skill1)
 
         // Adding physics body to container
         this.scene.physics.world.enable(this);
@@ -49,6 +56,8 @@ export default class Warrior extends Phaser.GameObjects.Container {
 
             this.move(dx, dy)
         }
+
+        this.skill1.update()
     }
 
     move(dx: number, dy: number) {
@@ -74,5 +83,12 @@ export default class Warrior extends Phaser.GameObjects.Container {
         }
 
         this.sprite.play('warrior-walking', true)
+    }
+
+    skill() {
+        this.skill1.x = 0
+        this.skill1.y = 0
+        this.skill1.visible = true
+        this.skill1.setShootingTowards({x: 1, y: -1})
     }
 }
