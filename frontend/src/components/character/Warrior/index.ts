@@ -9,11 +9,11 @@ export default class Warrior extends Phaser.GameObjects.Container {
     static image: string = WarriorImage
 
     public userId: string
+    public skill1: BlueLaser
+
     private sprite: Phaser.Physics.Arcade.Sprite
     private speed: number = 60;
     private moveToPosition: Position | null = null // Moving to specific position
-
-    private skill1: BlueLaser
 
     constructor(scene: Phaser.Scene, userId: string, x: number, y: number, scale: number = 1) {
         super(scene, x, y);
@@ -26,9 +26,7 @@ export default class Warrior extends Phaser.GameObjects.Container {
         this.sprite.setScale(scale)
         this.add(this.sprite)
 
-        this.skill1 = new BlueLaser(scene, 0, 0)
-        this.skill1.visible = false
-        this.add(this.skill1)
+        this.skill1 = new BlueLaser(scene, x, y)
 
         // Adding physics body to container
         this.scene.physics.world.enable(this);
@@ -36,6 +34,12 @@ export default class Warrior extends Phaser.GameObjects.Container {
 
     static load = (scene: Phaser.Scene) => {
         scene.load.aseprite(Warrior.key, Warrior.image, WarriorJson)
+    }
+
+    setSkillCollision(physics: Phaser.Physics.Arcade.ArcadePhysics, boss: Phaser.GameObjects.GameObject) {
+        physics.add.collider(boss, this.skill1, (_boss, _skill) => {
+            (_skill as BlueLaser).remove()
+        })
     }
 
     setMovePosition(position: Position) {
@@ -86,9 +90,6 @@ export default class Warrior extends Phaser.GameObjects.Container {
     }
 
     skill() {
-        this.skill1.x = 0
-        this.skill1.y = 0
-        this.skill1.visible = true
-        this.skill1.setShootingTowards({x: 1, y: -1})
+        this.skill1.shoot({x: this.x, y: this.y}, {x: 1, y: -1})
     }
 }

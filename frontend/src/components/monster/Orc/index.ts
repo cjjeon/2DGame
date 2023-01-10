@@ -17,6 +17,8 @@ export default class Orc extends Phaser.GameObjects.Container {
         this.sprite = this.scene.physics.add.sprite(0, 0, Orc.key).play({key: `orc-idle`, repeat: -1})
         this.sprite.setScale(scale)
         this.add(this.sprite)
+        
+        this.scene.physics.world.enable(this);
     }
 
     static load = (scene: Phaser.Scene) => {

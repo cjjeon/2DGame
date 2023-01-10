@@ -56,11 +56,11 @@ export default class BossRoomScene extends Phaser.Scene {
     }
 
     joinRoom(room: Room) {
+        this.addBoss(room.boss)
+
         room.players.forEach((player) => {
             this.addPlayer(player)
         })
-
-        this.addBoss(room.boss)
     }
 
     addBoss(boss: Boss) {
@@ -71,6 +71,11 @@ export default class BossRoomScene extends Phaser.Scene {
     addPlayer(player: Player) {
         const warrior = new Warrior(this, player.userId, player.position.x, player.position.y, 0.7)
         warrior.depth = 1
+
+        if (this.orc) {
+            warrior.setSkillCollision(this.physics, this.orc)
+        }
+
         this.players.push(warrior)
     }
 
