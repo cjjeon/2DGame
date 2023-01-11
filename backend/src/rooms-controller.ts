@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
 import {Room as DbRoom, User} from "./database/models";
-import {ActionData, ActionType, ClickMoveData, Player, Room, RoomStatus} from "./type";
+import {Player, Position, Room, RoomStatus, Skill} from "./type";
 
 
 interface Rooms {
@@ -31,21 +31,38 @@ class RoomsController {
         }
     }
 
-    updatePlayer(roomId: string, userId: string, actionType: ActionType, actionData: ActionData): Player | null {
+    updatePlayerPosition(roomId: string, userId: string, position: Position): Player | null {
         if (!(roomId in this.rooms)) return null
         const room = this.rooms[roomId]
         const player = room.players.find(player => player.userId === userId)
         if (!player) return null
 
-        switch (actionType) {
-            case ActionType.MOVE:
-                const data = actionData as ClickMoveData
-                player.position.x = data.x
-                player.position.y = data.y
-                break
-        }
+        player.position = position
 
         return player
+    }
+
+    createPlayerSkill(roomId: string, userId: string): Skill | null {
+        if (!(roomId in this.rooms)) return null
+        const room = this.rooms[roomId]
+        const player = room.players.find(player => player.userId === userId)
+        if (!player) return null
+
+        const playerPosition = player.position
+        const bossPosition = room.boss.position
+
+        const skill: Skill = {
+            damage: 1,
+            position: player.position,
+            direction: {
+                slope: (bossPosition.y - playerPosition.y) / (bossPosition.x - playerPosition.x),
+                xDirection: (bossPosition.x - playerPosition.x) > 0 ? 1 : -1
+            }
+        }
+
+        room.playerSkills.push(skill)
+
+        return skill
     }
 
     async joinRoomForPlayer(user: User): Promise<{ room: Room, player: Player }> {
@@ -87,6 +104,7 @@ class RoomsController {
         const room: Room = {
             id: dbRoom.id,
             players: [player],
+            playerSkills: [],
             boss: {
                 health: 100,
                 position: {

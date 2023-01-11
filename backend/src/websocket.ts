@@ -5,7 +5,7 @@ import auth from "./auth";
 import {User} from "./database/models";
 import errors from "./errors";
 import RoomsController from "./rooms-controller";
-import {PlayerActionProp} from "./type";
+import {ActionType, ClickMoveData, PlayerActionProp} from "./type";
 
 export default function init(server: http.Server) {
     const socketServer = new SocketIO.Server(server, {
@@ -65,10 +65,20 @@ export default function init(server: http.Server) {
         })
 
         socket.on('player-action', ({actionType, actionData}: PlayerActionProp) => {
-            const player = roomController.updatePlayer(user.roomId, user.id, actionType, actionData)
-
-            if (player) {
-                socketServer.to(user.roomId).emit('player-update', {player, actionType, actionData})
+            switch (actionType) {
+                case ActionType.CLICK_MOVE:
+                    const data = actionData as ClickMoveData
+                    const player = roomController.updatePlayerPosition(user.roomId, user.id, data)
+                    if (player) {
+                        socketServer.to(user.roomId).emit('player-update', {player, actionType, actionData})
+                    }
+                    break;
+                case ActionType.SKILL_1:
+                    const skill = roomController.createPlayerSkill(user.roomId, user.id)
+                    if (skill) {
+                        socketServer.to(user.roomId).emit('create-player-skill', skill)
+                    }
+                    break;
             }
         })
 

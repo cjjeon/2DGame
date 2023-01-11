@@ -100,7 +100,7 @@
 
 
 import {io, Socket as IoSocket} from "socket.io-client";
-import {Player, PlayerActionProp, PlayerUpdateProp, Room} from "./type";
+import {Player, PlayerActionProp, PlayerUpdateProp, Room, Skill} from "./type";
 
 export enum SocketState {
     CONNECTED,
@@ -175,6 +175,10 @@ class Socket {
 
     onPlayerAction(props: PlayerActionProp) {
         this.socket.emit('player-action', props)
+    }
+
+    onCreatePlayerSkill(callback: (props: Skill) => void) {
+        this.socket.on('create-player-skill', callback)
     }
 
     onDisconnect(callback: () => void) {

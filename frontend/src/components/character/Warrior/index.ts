@@ -1,5 +1,4 @@
 import {Position} from "../../../type";
-import BlueLaser from "../../skills/BlueLaser";
 import WarriorJson from './warrior_character.json'
 import WarriorImage from './warrior_character.png'
 
@@ -9,7 +8,6 @@ export default class Warrior extends Phaser.GameObjects.Container {
     static image: string = WarriorImage
 
     public userId: string
-    public skill1: BlueLaser
 
     private sprite: Phaser.Physics.Arcade.Sprite
     private speed: number = 60;
@@ -26,8 +24,6 @@ export default class Warrior extends Phaser.GameObjects.Container {
         this.sprite.setScale(scale)
         this.add(this.sprite)
 
-        this.skill1 = new BlueLaser(scene, x, y)
-
         // Adding physics body to container
         this.scene.physics.world.enable(this);
     }
@@ -36,11 +32,6 @@ export default class Warrior extends Phaser.GameObjects.Container {
         scene.load.aseprite(Warrior.key, Warrior.image, WarriorJson)
     }
 
-    setSkillCollision(physics: Phaser.Physics.Arcade.ArcadePhysics, boss: Phaser.GameObjects.GameObject) {
-        physics.add.collider(boss, this.skill1, (_boss, _skill) => {
-            (_skill as BlueLaser).remove()
-        })
-    }
 
     setMovePosition(position: Position) {
         this.moveToPosition = position
@@ -61,7 +52,6 @@ export default class Warrior extends Phaser.GameObjects.Container {
             this.move(dx, dy)
         }
 
-        this.skill1.update()
     }
 
     move(dx: number, dy: number) {
@@ -89,7 +79,4 @@ export default class Warrior extends Phaser.GameObjects.Container {
         this.sprite.play('warrior-walking', true)
     }
 
-    skill() {
-        this.skill1.shoot({x: this.x, y: this.y}, {x: 1, y: -1})
-    }
 }

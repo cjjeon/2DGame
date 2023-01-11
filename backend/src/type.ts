@@ -15,6 +15,17 @@ export interface Player {
     position: Position
 }
 
+export interface Direction {
+    slope: number
+    xDirection: number
+}
+
+export interface Skill {
+    damage: number
+    position: Position
+    direction: Direction
+}
+
 export enum RoomStatus {
     WAITING,
     STARTED,
@@ -25,12 +36,14 @@ export interface Room {
     id: string
     status: RoomStatus
     players: Player[]
+    playerSkills: Skill[]
     boss: Boss
 }
 
 export enum ActionType {
     MOVE = 'MOVE',
-    CLICK_MOVE = 'CLICK_MOVE'
+    CLICK_MOVE = 'CLICK_MOVE',
+    SKILL_1 = 'SKILL_1'
 }
 
 export interface MoveData {
@@ -43,7 +56,7 @@ export interface ClickMoveData {
     y: number
 }
 
-export type ActionData = MoveData | ClickMoveData
+export type ActionData = MoveData | ClickMoveData | null
 
 export interface PlayerActionProp {
     actionType: ActionType,

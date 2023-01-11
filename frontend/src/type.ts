@@ -15,6 +15,17 @@ export interface Player {
     position: Position
 }
 
+export interface Direction {
+    slope: number
+    xDirection: number
+}
+
+export interface Skill {
+    damage: number
+    position: Position
+    direction: Direction
+}
+
 export enum RoomStatus {
     WAITING,
     STARTED,
@@ -25,6 +36,7 @@ export interface Room {
     id: string
     status: RoomStatus
     players: Player[]
+    playerSkills: Skill[]
     boss: Boss
 }
 
